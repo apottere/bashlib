@@ -1,0 +1,123 @@
+#!/bin/bash
+
+
+#@function bbc.build:
+bbc_build()
+{
+    function bbc_helper_foreground ()
+    {
+        case $1 in
+            "black")
+                echo "30"
+				;;
+            "red")
+                echo "31"
+				;;
+            "green")
+                echo "32"
+				;;
+            "yellow")
+                echo "33"
+				;;
+            "blue")
+                echo "34"
+				;;
+            "magenta")
+                echo "35"
+				;;
+            "cyan")
+                echo "36"
+				;;
+            "white")
+                echo "37"
+				;;
+            "gray")
+                echo "90"
+				;;
+            *)
+                echo " NO_COLOR "
+            ;;
+        esac
+    };
+    function bbc_helper_background ()
+    {
+        case $1 in
+            "black")
+                echo "40"
+				;;
+            "red")
+                echo "41"
+				;;
+            "green")
+                echo "42"
+				;;
+            "yellow")
+                echo "43"
+				;;
+            "blue")
+                echo "44"
+				;;
+            "magenta")
+                echo "45"
+				;;
+            "cyan")
+                echo "46"
+				;;
+            "white")
+                echo "47"
+				;;
+            "gray")
+                echo "100"
+				;;
+            *)
+                echo " NO_COLOR "
+            ;;
+        esac
+    };
+
+    RET="\033[";
+    COLON="";
+
+	# Handle reset case
+	if [[ "$1" == "reset" ]]; then
+		echo "${RET}0;0m"
+		return
+	fi
+
+    while [[ $1 != "" ]]; do
+        RET="${RET}$COLON";
+        COLON=";";
+        case $1 in
+            "fg")
+                helper="bbc_helper_foreground";
+                shift 1;
+                RET="${RET}`$helper $1`"
+            ;;
+            "bg")
+                helper="bbc_helper_background";
+                shift 1;
+                RET="${RET}`$helper $1`"
+            ;;
+            "reg")
+                RET="${RET}0"
+            ;;
+            "bold")
+                RET="${RET}1"
+            ;;
+            "dim")
+                RET="${RET}2"
+            ;;
+            "underline")
+                RET="${RET}4"
+            ;;
+            "blink")
+                RET="${RET}5"
+            ;;
+            *)
+                echo " NO_COLOR "
+            ;;
+        esac;
+        shift 1;
+    done;
+    echo "${RET}m"
+}

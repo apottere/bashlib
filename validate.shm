@@ -1,0 +1,28 @@
+#!/bin/bash
+
+validate_set_fae() {
+	validate_fae="true"
+}
+
+validate_set_shutown_handler() {
+	validate_shutdown_handler="$1"
+}
+
+validate_fail() {
+	echo -n -e "$1"
+	if [[ $validate_fae ]]; then
+		return 1
+	else
+		if [[ -n $validate_shutdown_handler ]]; then
+			$validate_shutdown_handler
+		fi
+		exit 1
+	fi
+}
+
+validate_not_empty() {
+	if [[ -z "$1" ]]; then
+		validate_fail "$2"
+	fi
+	return 0
+}
