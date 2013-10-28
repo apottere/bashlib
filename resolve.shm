@@ -2,11 +2,14 @@
 
 #@function resolve.dir:
 # $1: file or directory
+# $2: arguments to pwd
 resolve_dir() {
-	if [[ -f "${1/#~/$HOME}" ]]; then
-		resolve_dir "$(dirname ${1/#~/$HOME})"
-	elif [[ -d "${1/#~/$HOME}" ]]; then
-		(builtin cd "$(dirname ${1/#~/$HOME})/$(basename ${1/#~/$HOME})" 2>/dev/null && pwd)
+	# Fix tildes in path
+	local p="${1/#~/$HOME}"
+	if [[ -f $p ]]; then
+		resolve_dir $(dirname "$p")
+	elif [[ -d $p ]]; then
+		(builtin cd "$p" &>/dev/null && pwd "$2")
 	fi
 }
 
