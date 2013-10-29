@@ -1,0 +1,61 @@
+#!/bin/bash
+
+#@function threads.init:
+# $1: thread count, defaults to # of native threads if possible, otherwise 4.
+threads_init() {
+	if [[ ! $1 ]]; then
+		if [[ -f /proc/cpuinfo ]]; then
+			threads_default_count=$(grep -c '^processor' /proc/cpuinfo)
+		elif type sysctl &>/dev/null; then
+			threads_default_count=$(sysctl -a | grep machdep.cpu.thread_count | cut -d ' ' -f 2)
+		fi
+	else
+		threads_default_count=$1
+	fi
+
+	if [[ ! $threads_default_count ]]; then
+		threads_default_count=4
+	fi
+
+	threads_killed=''
+}
+
+#@function threads.get_default_count:
+threads_get_default_count() {
+	echo -n "$threads_default_count"
+}
+
+#@function threads.kill:
+threads_kill() {
+	threads_killed='true'
+}
+
+#@function threads.run:
+# $1: function to run for each item in the list
+# $2: sleep time when at max jobs
+# $@: list of things to iterate over, after inital args have been shifted off
+threads_run() {
+	local i
+	local k
+	local func="$1"
+	local timeout="$2"
+	local threadcount=$threads_default_count
+	shift 2
+
+	unset IFS
+	for i in "$@"
+	do
+		k=$(jobs | wc -l | tr -d ' ')
+		while [[ (( $k -ge $threadcount )) ]]
+		do
+			sleep "$timeout"
+			k=$(jobs | wc -l | tr -d ' ')
+		done
+		if [[ -z $threads_killed ]]; then
+			$func $i &
+		else
+			break
+		fi
+			
+	done
+}
