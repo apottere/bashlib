@@ -19,22 +19,23 @@ resolve_dir() {
 # $3: path seperator
 resolve_file_in_path() {
 
-	resolve_BIFS="$IFS"
-	IFS="$3"
-	for resolve_d in "$2"; do
+	local d
+	local f
 
-		if [[ $resolve_d ]]; then
-			resolve_d=`resolve_dir $resolve_d`
-			resolve_f=`find $resolve_d -type f -name "$1" 2>/dev/null | head -1`
-			if [[ $resolve_f ]]; then
+	IFS="$3"
+	for d in $2; do
+
+		if [[ $d ]]; then
+			d=$(resolve_dir $d)
+			f=$(find $d -type f -name "$1" 2>/dev/null | head -1)
+			if [[ $f ]]; then
 				break
 			fi
 		fi
 
 	done
-	IFS="$resolve_BIFS"
 
-	echo -n "$resolve_f"
+	echo -n "$f"
 }
 
 #@funciton resolve.expanded_path
