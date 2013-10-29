@@ -40,17 +40,18 @@ resolve_file_in_path() {
 
 #@funciton resolve.expanded_path
 # Resolves the list of directories that make up this path.
-# $1: path
+# $1: path, defaluts to '.'
 resolve_expanded_path() {
-	resolve_current_dir="$(resolve_dir $1)"
-	resolve_expanded_dirs=("$resolve_current_dir")
+	local current_dir="$(resolve_dir ${1:-.})"
+	local expanded_dirs=("$current_dir")
+	local d
 
-	while [[ $resolve_current_dir != '/' ]]; do
-		resolve_current_dir="$(dirname $resolve_current_dir)"
-		resolve_expanded_dirs=("$resolve_current_dir" "${resolve_expanded_dirs[@]}")
+	while [[ $current_dir != '/' ]]; do
+		current_dir="$(dirname $current_dir)"
+		expanded_dirs=("$current_dir" "${expanded_dirs[@]}")
 	done
 
-	for resolve_i in "${resolve_expanded_dirs[@]}"; do
-		echo "$resolve_i"
+	for d in "${expanded_dirs[@]}"; do
+		echo "$d"
 	done
 }
