@@ -1,123 +1,128 @@
 #!/bin/bash
 
+#@function bbc.helper_fg:
+function bbc_helper_fg ()
+{
+	case "$1" in
+		"black")
+			echo "30"
+			;;
+		"red")
+			echo "31"
+			;;
+		"green")
+			echo "32"
+			;;
+		"yellow")
+			echo "33"
+			;;
+		"blue")
+			echo "34"
+			;;
+		"magenta")
+			echo "35"
+			;;
+		"cyan")
+			echo "36"
+			;;
+		"white")
+			echo "37"
+			;;
+		"gray")
+			echo "90"
+			;;
+		*)
+			echo " NO_COLOR "
+		;;
+	esac
+};
 
-#@function bbc.build:
+#@function bbc.helper_bg:
+function bbc_helper_bg ()
+{
+	case "$1" in
+		"black")
+			echo "40"
+			;;
+		"red")
+			echo "41"
+			;;
+		"green")
+			echo "42"
+			;;
+		"yellow")
+			echo "43"
+			;;
+		"blue")
+			echo "44"
+			;;
+		"magenta")
+			echo "45"
+			;;
+		"cyan")
+			echo "46"
+			;;
+		"white")
+			echo "47"
+			;;
+		"gray")
+			echo "100"
+			;;
+		*)
+			echo " NO_COLOR "
+		;;
+	esac
+};
+
+
+#@function bbc.build: bbc.helper_fg bbc.helper_bg
 bbc_build()
 {
-    function bbc_helper_foreground ()
-    {
-        case $1 in
-            "black")
-                echo "30"
-				;;
-            "red")
-                echo "31"
-				;;
-            "green")
-                echo "32"
-				;;
-            "yellow")
-                echo "33"
-				;;
-            "blue")
-                echo "34"
-				;;
-            "magenta")
-                echo "35"
-				;;
-            "cyan")
-                echo "36"
-				;;
-            "white")
-                echo "37"
-				;;
-            "gray")
-                echo "90"
-				;;
-            *)
-                echo " NO_COLOR "
-            ;;
-        esac
-    };
-    function bbc_helper_background ()
-    {
-        case $1 in
-            "black")
-                echo "40"
-				;;
-            "red")
-                echo "41"
-				;;
-            "green")
-                echo "42"
-				;;
-            "yellow")
-                echo "43"
-				;;
-            "blue")
-                echo "44"
-				;;
-            "magenta")
-                echo "45"
-				;;
-            "cyan")
-                echo "46"
-				;;
-            "white")
-                echo "47"
-				;;
-            "gray")
-                echo "100"
-				;;
-            *)
-                echo " NO_COLOR "
-            ;;
-        esac
-    };
-
-    RET="\033[";
-    COLON="";
+	local code="\033[";
+    local colon="";
+	local helper
 
 	# Handle reset case
-	if [[ "$1" == "reset" ]]; then
-		echo "${RET}0;0m"
+	if [[ "$1" =~ reset|RESET|Reset ]]; then
+		echo "${code}0;0m"
 		return
 	fi
 
     while [[ $1 != "" ]]; do
-        RET="${RET}$COLON";
-        COLON=";";
-        case $1 in
+        code="${code}$colon";
+        colon=";";
+
+        case "$1" in
             "fg")
                 helper="bbc_helper_foreground";
                 shift 1;
-                RET="${RET}`$helper $1`"
-            ;;
+                code="${code}`$helper $1`"
+				;;
             "bg")
                 helper="bbc_helper_background";
                 shift 1;
-                RET="${RET}`$helper $1`"
-            ;;
+                code="${code}`$helper $1`"
+				;;
             "reg")
-                RET="${RET}0"
-            ;;
+                code="${code}0"
+				;;
             "bold")
-                RET="${RET}1"
-            ;;
+                code="${code}1"
+				;;
             "dim")
-                RET="${RET}2"
-            ;;
+                code="${code}2"
+				;;
             "underline")
-                RET="${RET}4"
-            ;;
+                code="${code}4"
+				;;
             "blink")
-                RET="${RET}5"
-            ;;
+                code="${code}5"
+				;;
             *)
                 echo " NO_COLOR "
-            ;;
+				;;
         esac;
         shift 1;
-    done;
-    echo "${RET}m"
+    done
+    echo "${code}m"
 }
