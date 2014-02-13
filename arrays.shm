@@ -1,0 +1,128 @@
+#!/bin/bash
+
+#@function arrays.dump: arrays.get_indicies arrays.get
+# $1: Array name
+arrays_dump() {
+	echo "Dump of array '$1':"
+	local i
+	unset IFS
+	for i in $(arrays_get_indicies $1); do
+		echo -e "Key: '$i'\t\tValue: '$(arrays_get $1 $i)'"
+	done
+}
+
+#@function arrays.each: arrays.get_indicies arrays.get
+# $1: Array name
+# $2: Function to apply to each element
+arrays_each() {
+	local i
+	local func=${2:?Function must be set.}
+	unset IFS
+	for i in $(arrays_get_indicies $1); do
+		$func "$(arrays_get $1 $i)"
+	done
+}
+
+#@function arrays.collect: arrays.get_indicies arrays.get arrays.set
+# $1: Array name
+# $2: Function to apply to each element
+arrays_collect() {
+	local arrays_i
+	local arrays_a=()
+	local arrays_f=${2:?Function must be set.}
+	unset IFS
+	for arrays_i in $(arrays_get_indicies $1); do
+		arrays_set $1 $arrays_i "$($arrays_f "$(arrays_get $1 $arrays_i)")"
+	done
+}
+
+#@function arrays.set: arrays.len
+# $1: Array name
+# $2: Array index
+# $3: String to set
+arrays_set() {
+	read -r "$1[$2]" <<< "$3"
+}
+
+#@function arrays.push: arrays.len arrays.set
+# $1: Array name
+# $2: String to push
+arrays_push() {
+	arrays_set $1 $(arrays_len $2) "$3"
+}
+
+#@function arrays.pop: arrays.len arrays.remove arrays.get
+# $1: Array name
+arrays_pop() {
+	local array="$1"
+	local end=$(arrays_end $array)
+	local var="$(arrays_get $array $len)"
+	arrays_remove $array $len
+	echo "$var"
+}
+
+#@function arrays.get:
+# $1: Array name
+# $2: Array index
+arrays_get() {
+	local array="$1[${2:?Array index required.}]"
+	echo "${!array}"
+}
+
+#@function arrays.index_of:
+# $1: Array name
+# $2: Element to search for
+# $r: The first occurance of element $2 in array $1
+arrays_index_of() {
+    local i
+    unset IFS
+    for i in $(arrays_get_indicies $1); do
+        local elem="$(arrays_get $1 $i)"
+        if [[ $elem == $2 ]]; then
+            echo "$i"
+            return 0
+        fi
+    done
+}
+#@function arrays.first: arrays.get
+# $1: Array name
+arrays_first() {
+	arrays_get $1 0
+}
+
+#@function arrays.last: arrays.get
+# $1: Array name
+arrays_last() {
+	arrays_get $1 $(arrays_end $1)
+}
+
+#@function arrays.get_indicies:
+# $1: Array name
+arrays_get_indicies() {
+	# I don't like this, but I don't know how to fix it.
+	unset IFS
+	eval 'echo ${!'"${1:?Array name is required.}"'[@]}'
+}
+
+#@function arrays.remove:
+# $1: Array name
+# $2: Index to remove
+arrays_remove() {
+	local array="$1[$2]"
+	eval 'unset $array'
+}
+
+#@function arrays.len:
+# $1: Array name
+arrays_len() {
+	# I don't like this, but I don't know how to fix it.
+	eval 'echo ${#'"$1"'[@]}'
+}
+
+#@function arrays.end: arrays.len
+# $1: Array name
+arrays_end() {
+	local len=$(arrays_len $1)
+	((len--))
+	echo $len
+}

@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#@function dict.get_index: dict.get_index_array arrays.index_of arrays.get
+# $1: Dictionary name
+# $2: Key to get
+dict_get() {
+	local d="$1"
+	local di="$(dict_get_index_array $d)"
+	local i=$(arrays_index_of $di "${2:?Key is required.}")
+	if [[ $i ]]; then
+	    echo "$(arrays_get $d $i)"
+    fi
+}
+
+#@function dict.dump: dict.get_index_array arrays.get_indicies arrays.get
+# $1: Dictionary name
+dict_dump() {
+	local di="$(dict_get_index_array $1)"
+    local i
+    unset IFS
+	echo "Dump of dict '$1':"
+    for i in $(arrays_get_indicies $1); do
+		echo -e "Key: '$(arrays_get $di $i)'\t\tValue: '$(arrays_get $1 $i)'"
+    done
+}
+#@function dict.set: dict.get_index_array arrays.index_of arrays.len arrays.set
+# $1: Dictionary name
+# $2: Key to set
+# $3: Value to set at key $2
+dict_set() {
+    local dict_d="$1"
+	local dict_di="$(dict_get_index_array $dict_d)"
+	local dict_i=$(arrays_index_of $dict_di "${2:?Key is required.}")
+	: ${dict_i:=$(arrays_len $dict_di)}
+	arrays_set $dict_di $dict_i "$2"
+	arrays_set $dict_d $dict_i "$3"
+}
+#@function dict.get_index_array:
+# $1: Dictionary name
+dict_get_index_array() {
+	local i="${1:?Dictionary name is required.}_i"
+	: ${!i:?Dictionary index array $i does not exist.}
+	echo $i
+}
