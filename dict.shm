@@ -1,44 +1,48 @@
 #!/bin/bash
 
-#@function dict.get_index: dict.get_index_array arrays.index_of arrays.get
+#@function dict.get_index: dict.get_index_array arrays.index_of arrays.get error
 # $1: Dictionary name
 # $2: Key to get
 dict_get() {
-	local d="$1"
-	local di="$(dict_get_index_array $d)"
-	local i=$(arrays_index_of $di "${2:?Key is required.}")
+	local dict_i=$(arrays_index_of "$(dict_get_index_array $1)" "${2:?$(error 'Key is required.')}")
 	if [[ $i ]]; then
-	    echo "$(arrays_get $d $i)"
+	    echo "$(arrays_get $1 $i)"
     fi
+}
+
+#@function dict.init: dict.get_index_array arrays.init
+# $1: Dictionary name
+dict_init() {
+	arrays_init $1
+	arrays_init $(dict_get_index_array $1)
 }
 
 #@function dict.dump: dict.get_index_array arrays.get_indicies arrays.get
 # $1: Dictionary name
 dict_dump() {
-	local di="$(dict_get_index_array $1)"
-    local i
+	local dict_di="$(dict_get_index_array $1)"
+    local dict_i
     unset IFS
 	echo "Dump of dict '$1':"
-    for i in $(arrays_get_indicies $1); do
-		echo -e "Key: '$(arrays_get $di $i)'\t\tValue: '$(arrays_get $1 $i)'"
+    for dict_i in $(arrays_get_indicies $1); do
+		echo -e "Key: '$(arrays_get $dict_di $i)'\t\tValue: '$(arrays_get $1 $i)'"
     done
 }
-#@function dict.set: dict.get_index_array arrays.index_of arrays.len arrays.set
+#@function dict.set: dict.get_index_array arrays.index_of arrays.len arrays.set error
 # $1: Dictionary name
 # $2: Key to set
 # $3: Value to set at key $2
 dict_set() {
-    local dict_d="$1"
-	local dict_di="$(dict_get_index_array $dict_d)"
-	local dict_i=$(arrays_index_of $dict_di "${2:?Key is required.}")
+	local dict_di="$(dict_get_index_array $1)"
+	local dict_i=$(arrays_index_of $dict_di "${2:?$(error 'Key is required.')}")
 	: ${dict_i:=$(arrays_len $dict_di)}
 	arrays_set $dict_di $dict_i "$2"
-	arrays_set $dict_d $dict_i "$3"
+	arrays_set $1 $dict_i "$3"
 }
-#@function dict.get_index_array:
+#@function dict.get_index_array: error
 # $1: Dictionary name
 dict_get_index_array() {
-	local i="${1:?Dictionary name is required.}_i"
-	: ${!i:?Dictionary index array $i does not exist.}
-	echo $i
+	local dict_i="${1:?$(error 'Dictionary name is required.')}_i"
+	: ${!dict_i:?$(error 'Dictionary index array $i does not exist.')}
+	echo $dict_i
 }

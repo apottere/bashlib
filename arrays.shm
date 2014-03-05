@@ -11,25 +11,31 @@ arrays_dump() {
 	done
 }
 
-#@function arrays.each: arrays.get_indicies arrays.get
+#@function arrays.init: error
+# $1: Array name
+arrays_init() {
+	read -a "${1:?$(error 'Array name is required.')}" <<< ''
+}
+
+#@function arrays.each: arrays.get_indicies arrays.get error
 # $1: Array name
 # $2: Function to apply to each element
 arrays_each() {
 	local i
-	local func=${2:?Function must be set.}
+	local func=${2:?$(error 'Function must be set.')}
 	unset IFS
 	for i in $(arrays_get_indicies $1); do
 		$func "$(arrays_get $1 $i)"
 	done
 }
 
-#@function arrays.collect: arrays.get_indicies arrays.get arrays.set
+#@function arrays.collect: arrays.get_indicies arrays.get arrays.set error
 # $1: Array name
 # $2: Function to apply to each element
 arrays_collect() {
 	local arrays_i
 	local arrays_a=()
-	local arrays_f=${2:?Function must be set.}
+	local arrays_f=${2:?$(error 'Function must be set.')}
 	unset IFS
 	for arrays_i in $(arrays_get_indicies $1); do
 		arrays_set $1 $arrays_i "$($arrays_f "$(arrays_get $1 $arrays_i)")"
@@ -61,11 +67,11 @@ arrays_pop() {
 	echo "$var"
 }
 
-#@function arrays.get:
+#@function arrays.get: error
 # $1: Array name
 # $2: Array index
 arrays_get() {
-	local array="$1[${2:?Array index required.}]"
+	local array="$1[${2:?$(error 'Array index required.')}]"
 	echo "${!array}"
 }
 
@@ -96,12 +102,12 @@ arrays_last() {
 	arrays_get $1 $(arrays_end $1)
 }
 
-#@function arrays.get_indicies:
+#@function arrays.get_indicies: error
 # $1: Array name
 arrays_get_indicies() {
 	# I don't like this, but I don't know how to fix it.
 	unset IFS
-	eval 'echo ${!'"${1:?Array name is required.}"'[@]}'
+	eval 'echo ${!'"${1:?$(error 'Array name is required.')}"'[@]}'
 }
 
 #@function arrays.remove:

@@ -1,0 +1,61 @@
+#!/bin/bash
+
+#@function error: error.exit error.file error.format
+# $1: Message to error
+error() {
+	local depth=${2:-0}
+
+	echo "($(error_file)) $(error_format $depth "${1:-error}")"
+	error_exit
+}
+
+#@function error.exit:
+error_exit() {
+	if [[ $- != *i* ]]; then
+		exit 1
+	fi
+}
+
+#@function error.file:
+error_file() {
+	echo "$(basename "${0#-}")"
+}
+
+#@function error.format:
+# $1: Depth to target for error reporting
+# $2: Message to format
+error_format() {
+	local prefix
+	# Account for this function depth
+	local depth=$(( $1 + 1 ))
+	local frame_depth=$(( $depth + 1 ))
+	if [[ ${BASH_SOURCE[$frame_depth]} ]]; then
+		prefix="$(basename "${FUNCNAME[$frame_depth]}") (${BASH_SOURCE[$frame_depth]}:${BASH_LINENO[$depth]}): ${FUNCNAME[$depth]}"
+	else
+		prefix="shell"
+	fi
+
+	if [[ $2 ]]; then
+		echo "$prefix: $2"
+	else
+		echo "$prefix"
+	fi
+}
+
+#@function error.stack: error.stack_noexit error.exit 
+# $1: Message to error
+error_stack() {
+	error_stack_noexit "$1"
+	error_exit
+}
+
+#@function error.stack_noexit: error.format error.file
+error_stack_noexit() {
+	local i
+	local imax=${#FUNCNAME[@]}
+	echo "Stacktrace for $(error_file): ${1:-error}"
+	for (( i=1; i < imax; i++ )); do
+		echo -n -e '\t'
+		echo "$(error_format $i)"
+	done
+}
