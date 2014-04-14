@@ -3,6 +3,7 @@
 #@function print.ln
 # $1: printf format
 # $2: string to print
+# $3: color format (opitonal, will be reset automatically)
 print_ln() {
-	printf "$1" "`echo -n -e \"$2\"`"
+	[[ $3 ]] && echo -n -e "$3"; printf "$1" "$(echo -n -e "$2")"; [[ $3 ]] && echo -n -e '\033[0;0m'
 }

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#@function error: error.exit error.file error.format
+#@function error.do: error.exit error.file error.format
 # $1: Message to error
-error() {
+error_do() {
 	local depth=${2:-0}
 
 	echo "($(error_file)) $(error_format $depth "${1:-error}")"
@@ -30,9 +30,9 @@ error_format() {
 	local depth=$(( $1 + 1 ))
 	local frame_depth=$(( $depth + 1 ))
 	if [[ ${BASH_SOURCE[$frame_depth]} ]]; then
-		prefix="$(basename "${FUNCNAME[$frame_depth]}") (${BASH_SOURCE[$frame_depth]}:${BASH_LINENO[$depth]}): ${FUNCNAME[$depth]}"
+		prefix="at ${FUNCNAME[$depth]} (called from ${BASH_SOURCE[$frame_depth]}:${BASH_LINENO[$depth]})"
 	else
-		prefix="shell"
+		prefix="at parent"
 	fi
 
 	if [[ $2 ]]; then
