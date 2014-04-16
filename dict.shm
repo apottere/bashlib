@@ -17,7 +17,7 @@ dict_init() {
 	arrays_init $(dict_get_index_array $1)
 }
 
-#@function dict.dump: dict.get_index_array arrays.get_indicies arrays.get
+#@function dict.dump: dict.get_index_array arrays.get_indicies arrays.get print.ln
 # $1: Dictionary name
 dict_dump() {
 	local dict_di="$(dict_get_index_array $1)"
@@ -25,7 +25,8 @@ dict_dump() {
     unset IFS
 	echo "Dump of dict '$1':"
     for dict_i in $(arrays_get_indicies $1); do
-		echo -e "Key: '$(arrays_get $dict_di $dict_i)'\t\tValue: '$(arrays_get $1 $dict_i)'"
+		print_ln "%-50s" "Key: '$(arrays_get $dict_di $dict_i)'"
+		echo -e "Value: '$(arrays_get $1 $dict_i)'"
     done
 }
 
@@ -53,4 +54,11 @@ dict_get_index_array() {
 # $1: Dictionary name
 dict_get_keys() {
 	arrays_get $(dict_get_index_array $1) @
+}
+
+#@function dict.contains_key: arrays.contains dict.get_index_array
+# $1: Dictionary name
+# $2: Value to compare
+dict_contains_key() {
+	arrays_contains $(dict_get_index_array $1) "$2"
 }

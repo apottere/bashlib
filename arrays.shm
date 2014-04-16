@@ -133,3 +133,16 @@ arrays_end() {
 	((len--))
 	echo $len
 }
+
+#@function arrays.contains: arrays.get
+# $1: Array name
+# $2: Value to compare to
+arrays_contains() {
+	local arrays_i
+	for arrays_i in $(arrays_get $1 @); do
+		if [[ $arrays_i == $2 ]]; then
+			return 0
+		fi
+	done
+	return 1
+}
