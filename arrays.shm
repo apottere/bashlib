@@ -71,7 +71,7 @@ arrays_pop() {
 # $1: Array name
 # $2: Array index
 arrays_get() {
-	local array="$1[${2:?$(error 'Array index required.')}]"
+	local array="$1[${2:?$(error_do 'Array index required.')}]"
 	echo "${!array}"
 }
 
@@ -82,7 +82,7 @@ arrays_get() {
 arrays_index_of() {
     local i
     unset IFS
-    for i in $(arrays_get_indicies $1); do
+   for i in $(arrays_get_indicies $1); do
         local elem="$(arrays_get $1 $i)"
         if [[ $elem == $2 ]]; then
             echo "$i"
@@ -90,6 +90,7 @@ arrays_index_of() {
         fi
     done
 }
+
 #@function arrays.first: arrays.get
 # $1: Array name
 arrays_first() {

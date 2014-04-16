@@ -32,7 +32,7 @@ error_format() {
 	if [[ ${BASH_SOURCE[$frame_depth]} ]]; then
 		prefix="at ${FUNCNAME[$depth]} (called from ${BASH_SOURCE[$frame_depth]}:${BASH_LINENO[$depth]})"
 	else
-		prefix="at parent"
+		prefix="at $(ps -ocommand= -p $PPID | awk '{print $1}') (parent process)"
 	fi
 
 	if [[ $2 ]]; then
