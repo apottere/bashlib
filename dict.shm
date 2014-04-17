@@ -10,10 +10,10 @@ dict_get() {
     fi
 }
 
-#@function dict.init: dict.get_index_array arrays.init
+#@function dict.init: dict.get_index_array arrays.init error
 # $1: Dictionary name
 dict_init() {
-	arrays_init ${1:?$(error_do 'Dictionary name is required.')}
+	arrays_init ${1:?$(error 'Dictionary name is required.')}
 	arrays_init $(dict_get_index_array $1)
 }
 
@@ -46,7 +46,7 @@ dict_set() {
 # $1: Dictionary name
 dict_get_index_array() {
 	local dict_i="${1:?$(error 'Dictionary name is required.')}_i"
-	: ${dict_i:?$(error_do "Dictionary index array $i does not exist.")}
+	: ${dict_i:?$(error "Dictionary index array $i does not exist.")}
 	echo $dict_i
 }
 

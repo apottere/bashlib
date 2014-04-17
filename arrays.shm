@@ -71,7 +71,7 @@ arrays_pop() {
 # $1: Array name
 # $2: Array index
 arrays_get() {
-	local array="$1[${2:?$(error_do 'Array index required.')}]"
+	local array="$1[${2:?$(error 'Array index required.')}]"
 	echo "${!array}"
 }
 
