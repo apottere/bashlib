@@ -56,6 +56,12 @@ dict_get_keys() {
 	arrays_get $(dict_get_index_array $1) @
 }
 
+#@function dict.get_keys: arrays.get
+# $1: Dictionary name
+dict_get_values() {
+	arrays_get $1 @
+}
+
 #@function dict.contains_key: arrays.contains dict.get_index_array
 # $1: Dictionary name
 # $2: Value to compare

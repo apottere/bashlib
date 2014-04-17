@@ -54,17 +54,17 @@ arrays_set() {
 # $1: Array name
 # $2: String to push
 arrays_push() {
-	arrays_set $1 $(arrays_len $2) "$3"
+	arrays_set $1 $(arrays_len $1) "$2"
 }
 
 #@function arrays.pop: arrays.len arrays.remove arrays.get
 # $1: Array name
+# $2: Quiet output if given
 arrays_pop() {
-	local array="$1"
-	local end=$(arrays_end $array)
-	local var="$(arrays_get $array $len)"
-	arrays_remove $array $len
-	echo "$var"
+	local arrays_e=$(arrays_end $1)
+	local arrays_v="$(arrays_get $1 $arrays_e)"
+	arrays_remove $1 $arrays_e
+	[[ ! $2 ]] && echo "$arrays_v"
 }
 
 #@function arrays.get: error
@@ -75,7 +75,7 @@ arrays_get() {
 	echo "${!array}"
 }
 
-#@function arrays.index_of:
+#@function arrays.index_of: arrays.get_indicies
 # $1: Array name
 # $2: Element to search for
 # $r: The first occurance of element $2 in array $1
