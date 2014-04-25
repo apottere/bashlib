@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#@function bbc.helper_fg:
-function bbc_helper_fg ()
+#@function bbc.helper_foreground:
+function bbc_helper_foreground ()
 {
 	case "$1" in
 		"black")
@@ -32,13 +32,13 @@ function bbc_helper_fg ()
 			echo "90"
 			;;
 		*)
-			echo " NO_COLOR "
+			echo -n " NO_COLOR:\"$1\" "
 		;;
 	esac
 };
 
-#@function bbc.helper_bg:
-function bbc_helper_bg ()
+#@function bbc.helper_background:
+function bbc_helper_background ()
 {
 	case "$1" in
 		"black")
@@ -69,13 +69,13 @@ function bbc_helper_bg ()
 			echo "100"
 			;;
 		*)
-			echo " NO_COLOR "
+			echo -n " NO_COLOR:\"$1\" "
 		;;
 	esac
 };
 
 
-#@function bbc.build: bbc.helper_fg bbc.helper_bg
+#@function bbc.build: bbc.helper_foreground bbc.helper_background
 bbc_build()
 {
 	local code="\033[";
@@ -96,12 +96,12 @@ bbc_build()
             "fg")
                 helper="bbc_helper_foreground";
                 shift 1;
-                code="${code}`$helper $1`"
+                code="${code}$( $helper $1 )"
 				;;
             "bg")
                 helper="bbc_helper_background";
                 shift 1;
-                code="${code}`$helper $1`"
+                code="${code}$( $helper $1 )"
 				;;
             "reg")
                 code="${code}0"
@@ -119,10 +119,10 @@ bbc_build()
                 code="${code}5"
 				;;
             *)
-                echo " NO_COLOR "
+                echo -n " NO_CODE:\"$1\" "
 				;;
         esac;
         shift 1;
     done
-    echo "${code}m"
+    echo -n "${code}m"
 }
