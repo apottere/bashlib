@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#@function intro.list_functions
+intro_list_functions() {
+	local i; unset IFS
+	(
+		shopt -s extdebug
+		for i in $(declare -F | cut -f3 -d' '); do
+			declare -F "$i";
+		done
+	)
+}
